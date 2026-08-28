@@ -25,7 +25,7 @@ namespace TVTCommerce\LoginRateLimiter\Model\RateLimit;
  *    failure starts an entirely fresh window/counter rather than continuing the old one — an IP
  *    that failed once, waited out the window, and fails again is treated as attempt #1, not #2.
  */
-final class RateLimitPolicy
+class RateLimitPolicy
 {
     public function __construct(
         private readonly int $maxAttempts,

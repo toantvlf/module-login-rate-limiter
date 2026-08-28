@@ -14,7 +14,7 @@ namespace TVTCommerce\LoginRateLimiter\Model\RateLimit;
  * decision-making lives in RateLimitPolicy, which takes a LoginAttemptState and returns a new one
  * (immutability per this repo's coding-style rules: never mutate, always return a new instance).
  */
-final class LoginAttemptState
+class LoginAttemptState
 {
     public function __construct(
         public readonly int $attempts,
