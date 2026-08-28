@@ -1,0 +1,11 @@
+{
+    "name": "tvtcommerce/module-login-rate-limiter-tests",
+    "description": "Isolated PHPUnit environment for the Magento-independent parts of TVTCommerce_LoginRateLimiter. Kept separate from the module's own composer.json because magento/module-* packages require repo.magento.com credentials and are not needed to unit-test plain-PHP classes.",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^10"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

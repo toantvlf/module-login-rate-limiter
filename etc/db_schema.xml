@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <!--
+        One row per distinct client IP currently accumulating (or blocked for) failed storefront
+        login attempts. Deliberately keyed on ip_hash (SHA-256 hex digest of the raw IP), NOT the
+        IP itself — the raw IP is never persisted anywhere by this module. This is a data
+        minimization choice (see README.md "Privacy" section for the honest caveat: a plain,
+        unsalted SHA-256 of an IPv4 address is NOT cryptographically irreversible, since the
+        entire IPv4 address space is small enough to brute-force in a hash table lookup — this
+        column exists to avoid casually storing/logging raw visitor IPs, not as a security
+        control against a determined attacker with direct DB access).
+
+        No admin grid exists over this table (nothing for a merchant to browse/manage here), so
+        this stays a single small table with no ResourceModel/Collection stack — see
+        Model\RateLimit\LoginAttemptStore, which is the only class that reads/writes it directly
+        via ResourceConnection (mirrors module-email-otp-two-factor-auth's tvt_email_otp_code /
+        Model\Otp\OtpCodeManager, the closest sibling precedent in this repo for a small,
+        grid-less, single-row-per-key table).
+    -->
+    <table name="tvt_login_rate_limiter_attempt" resource="default" engine="innodb"
+           comment="TVT Login Rate Limiter — per-IP failed storefront login attempt counters">
+        <column xsi:type="varchar" name="ip_hash" nullable="false" length="64"
+                comment="SHA-256 hex digest of the client IP address — the raw IP is never stored"/>
+        <column xsi:type="smallint" name="attempts" unsigned="true" nullable="false" default="0"
+                comment="Failed login attempts recorded in the current window"/>
+        <column xsi:type="datetime" name="window_started_at" nullable="false"
+                comment="When the current attempt-counting window started (UTC)"/>
+        <column xsi:type="datetime" name="blocked_until" nullable="true"
+                comment="If set and in the future, this IP is currently blocked from attempting login until this time (UTC)"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP"
+                on_update="true" comment="Last write to this row — Cron\PurgeExpiredAttempts uses this to find long-stale rows"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="ip_hash"/>
+        </constraint>
+        <index referenceId="TVT_LOGIN_RATE_LIMITER_ATTEMPT_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+    </table>
+</schema>

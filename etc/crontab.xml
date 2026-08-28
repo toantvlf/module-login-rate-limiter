@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="tvt_login_rate_limiter_purge_expired" instance="TVTCommerce\LoginRateLimiter\Cron\PurgeExpiredAttempts" method="execute">
+            <!-- Hourly, off-peak-agnostic (a cheap indexed DELETE, not a report). Unlike this
+                 module's other config-gated behavior, this job intentionally runs even when
+                 "Enable" is off — see Cron\PurgeExpiredAttempts's docblock: it is pure garbage
+                 collection over rows left behind from whenever the module WAS enabled, not a
+                 feature that should stop just because rate-limiting itself is currently off. -->
+            <schedule>0 * * * *</schedule>
+        </job>
+    </group>
+</config>

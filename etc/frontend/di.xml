@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Frontend-scoped to match where the target class is actually used —
+         Magento\Customer\Controller\Account\LoginPost is only ever instantiated by the frontend
+         MVC router (the customer_account frontend route), so scoping the plugin to etc/frontend/
+         (rather than the root etc/di.xml) makes the plugin's reach match its real usage exactly,
+         same principle module-maintenance-mode's di.xml docblocks apply when choosing between
+         root and area scope. See Plugin\LoginPostPlugin's docblock for why a plugin (rather than
+         an event observer, used for the other two hooks) is the correct tool here. -->
+    <type name="Magento\Customer\Controller\Account\LoginPost">
+        <plugin name="tvtcommerce_loginratelimiter_login_post"
+                type="TVTCommerce\LoginRateLimiter\Plugin\LoginPostPlugin"/>
+    </type>
+
+    <!-- Magento\Customer\Controller\Ajax\Login is the checkout "login" popup's AJAX endpoint —
+         a separate controller from LoginPost above that reaches the same authenticate() call
+         through a different door. See Plugin\AjaxLoginPlugin's docblock for why this needs its
+         own plugin rather than being covered by the hooks above. -->
+    <type name="Magento\Customer\Controller\Ajax\Login">
+        <plugin name="tvtcommerce_loginratelimiter_ajax_login"
+                type="TVTCommerce\LoginRateLimiter\Plugin\AjaxLoginPlugin"/>
+    </type>
+</config>

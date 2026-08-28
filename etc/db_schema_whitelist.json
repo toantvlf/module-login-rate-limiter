@@ -1,0 +1,17 @@
+{
+    "tvt_login_rate_limiter_attempt": {
+        "column": {
+            "ip_hash": true,
+            "attempts": true,
+            "window_started_at": true,
+            "blocked_until": true,
+            "updated_at": true
+        },
+        "index": {
+            "TVT_LOGIN_RATE_LIMITER_ATTEMPT_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

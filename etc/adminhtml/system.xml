@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <!-- Shared top-level tab, already declared identically by every other TVTCommerce_* module
+             in this repo (module-maintenance-mode, module-topbar, module-smtp-config,
+             module-admin-audit-log, ...) — Magento merges system.xml tab nodes by id, so
+             redeclaring the same id here does not create a second tab. -->
+        <tab id="tvtcommerce" translate="label" sortOrder="200">
+            <label>TVTCommerce</label>
+        </tab>
+
+        <!--
+            Default scope only (showInWebsite="0" showInStore="0") on the section, group, and
+            every field below — deliberately, not an oversight. The underlying mechanism (an
+            IP-hash keyed table with no per-website/per-store concept, checked in a plugin/observer
+            that runs before any store/website context is meaningfully relevant to "is this IP
+            currently blocked") is installation-wide by nature. Allowing Website/Store View scope
+            here would create a misleading impression of per-store rate limiting that the storage
+            layer does not actually implement.
+        -->
+        <section id="tvtcommerce_login_rate_limiter" translate="label" type="text" sortOrder="145"
+                 showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Login Rate Limiter</label>
+            <tab>tvtcommerce</tab>
+            <resource>TVTCommerce_LoginRateLimiter::config</resource>
+
+            <group id="general" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Settings</label>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Rate-limits storefront login attempts <strong>per IP address</strong>, independent of whether the submitted email exists. Additive to — never a replacement for — Magento's own per-account lockout (Customers &gt; Customer Configuration &gt; Password Options &gt; "Maximum Login Failures to Lockout Account"), which only tracks failures once a submitted email resolves to a real customer account.]]></comment>
+                </field>
+
+                <field id="max_attempts" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Max Failed Attempts per IP</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Number of failed login attempts allowed from a single IP address within the Window below before that IP is temporarily blocked. Default: 10.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+
+                <field id="window_minutes" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Window Minutes</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Length of the rolling window (in minutes) failed attempts are counted over. If Max Failed Attempts isn't reached within this many minutes of the first failure, the counter resets. Default: 15.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+
+                <field id="block_minutes" translate="label comment" type="text" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Block Duration Minutes</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>How many minutes an IP is blocked from attempting login after reaching Max Failed Attempts. Default: 30.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

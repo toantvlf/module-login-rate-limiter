@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Frontend-only: this exact full action name only exists when the frontend MVC router
+         dispatches Magento\Customer\Controller\Account\LoginPost — verified against real core
+         source (vendor/magento/module-captcha/etc/frontend/events.xml uses the identical event
+         name for the identical controller, for the identical "check before authenticating"
+         purpose). See Observer\CheckLoginRateLimitObserver's docblock for the full reasoning. -->
+    <event name="controller_action_predispatch_customer_account_loginPost">
+        <observer name="tvtcommerce_loginratelimiter_check"
+                  instance="TVTCommerce\LoginRateLimiter\Observer\CheckLoginRateLimitObserver"/>
+    </event>
+</config>

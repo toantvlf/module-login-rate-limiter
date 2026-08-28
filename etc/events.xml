@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Global (root) scope, deliberately NOT etc/frontend/ — verified against real core source
+         (vendor/magento/module-customer/Model/AccountManagement/Authenticate.php) that
+         `customer_customer_authenticated` is dispatched from AccountManagement::authenticate(),
+         which is reachable from more entry points than just the storefront LoginPost form this
+         module's pre-check covers (e.g. the customer REST/GraphQL token endpoints share the same
+         call underneath). Resetting this module's own per-IP counter on ANY genuine successful
+         authentication is always safe regardless of area — see
+         Observer\ResetLoginAttemptsObserver's docblock. -->
+    <event name="customer_customer_authenticated">
+        <observer name="tvtcommerce_loginratelimiter_reset"
+                  instance="TVTCommerce\LoginRateLimiter\Observer\ResetLoginAttemptsObserver"/>
+    </event>
+</config>
