@@ -2,7 +2,7 @@
     "name": "tvtcommerce/module-login-rate-limiter",
     "description": "Free Magento 2 storefront security extension — rate-limits customer login attempts PER IP ADDRESS, independent of whether the submitted email exists. Additive to (never a replacement for) core's own per-account lockout (customer/password/lockout_threshold, customer/password/lockout_failures), which only tracks failures once a submitted email resolves to a real customerId and therefore never sees an attacker cycling through many different/nonexistent emails from the same IP.",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "authors": [
         {
